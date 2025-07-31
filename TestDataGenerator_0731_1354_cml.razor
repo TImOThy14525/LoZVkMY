@@ -1,0 +1,85 @@
+// 代码生成时间: 2025-07-31 13:54:18
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@using System.ComponentModel.DataAnnotations
+
+@code {
+    // Define a class to represent the test data
+    public class TestData {
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public int Age { get; set; }
+        [Required]
+        public string Email { get; set; }
+    }
+
+    // State property to hold the generated test data
+    private List<TestData> testDatas = new List<TestData>();
+    // State property to hold the template for generating test data
+    private TestData dataTemplate = new TestData();
+    // State property to hold the number of test data items to generate
+    private int numberOfItems = 10;
+
+    // Method to generate test data based on the template and the number of items
+    private void GenerateTestData() {
+        try {
+            // Clear the current test data list
+            testDatas.Clear();
+            // Generate test data items based on the number of items specified
+            for (int i = 0; i < numberOfItems; i++) {
+                var testData = new TestData {
+                    Name = dataTemplate.Name,
+                    Age = dataTemplate.Age,
+                    Email = dataTemplate.Email
+                };
+                // Add the generated test data to the list
+                testDatas.Add(testData);
+            }
+        } catch (Exception ex) {
+            // Handle any exceptions that may occur during test data generation
+            Console.WriteLine($"Error generating test data: {ex.Message}");
+        }
+    }
+
+    // Method to handle the template data change event
+    private void OnDataTemplateChanged() {
+        // Validate the template data before generating test data
+        var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(dataTemplate, serviceProvider: null, items: null);
+        var validationResults = new List<ValidationResult>();
+        if (Validator.TryValidateObject(dataTemplate, validationContext, validationResults, true)) {
+            // Generate test data if the template is valid
+            GenerateTestData();
+        } else {
+            // Handle validation errors
+            Console.WriteLine("Validation errors in the template data. Please correct them before generating test data.");
+        }
+    }
+}
+
+<!-- UI for the TestDataGenerator component -->
+<div>
+    <h3>Test Data Generator</h3>
+    <label for="name">Name:</label>
+    <input type="text" id="name" @bind="dataTemplate.Name" @onchange="OnDataTemplateChanged" />
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" @bind="dataTemplate.Age" @onchange="OnDataTemplateChanged" />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" @bind="dataTemplate.Email" @onchange="OnDataTemplateChanged" />
+
+    <label for="numberOfItems">Number of Items:</label>
+    <input type="number" id="numberOfItems" @bind="numberOfItems" @onchange="OnDataTemplateChanged" />
+
+    <button onclick="@GenerateTestData">Generate Test Data</button>
+
+    <ul>
+        @foreach (var testData in testDatas) {
+            <li>
+                Name: @testData.Name, Age: @testData.Age, Email: @testData.Email
+            </li>
+        }
+    </ul>
+</div>
