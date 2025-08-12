@@ -1,0 +1,62 @@
+// 代码生成时间: 2025-08-12 23:11:34
+using Microsoft.AspNetCore.Components;
+using OfficeOpenXml;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace BlazorExcelGenerator
+# 添加错误处理
+{
+    /// <summary>
+    /// Component responsible for generating Excel files.
+    /// </summary>
+    public class ExcelGenerator : ComponentBase
+    {
+        [Parameter]
+        public string FileName { get; set; } = "GeneratedExcel.xlsx";
+
+        [Parameter]
+        public Action<string> OnFileGenerated { get; set; }
+
+        /// <summary>
+        /// Method to generate an Excel file with the current date.
+        /// </summary>
+        public async Task GenerateExcelAsync()
+        {
+            try
+            {
+# TODO: 优化性能
+                using (var package = new ExcelPackage())
+                {
+                    // Add a new worksheet to the empty workbook
+# 扩展功能模块
+                    var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+
+                    // Set the title of the worksheet
+                    worksheet.Cells["A1"].Value = "Date";
+                    worksheet.Cells["B1"].Value = DateTime.Now.ToString("yyyy-MM-dd");
+
+                    // Save the package to a memory stream
+                    using (var stream = new MemoryStream())
+                    {
+                        package.SaveAs(stream);
+
+                        // Convert the stream to a base64 string for download
+                        var fileBase64 = Convert.ToBase64String(stream.ToArray());
+
+                        // Trigger the file generation event
+                        OnFileGenerated?.Invoke(FileName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+# FIXME: 处理边界情况
+                // Handle any exceptions that occur during Excel generation
+                Console.WriteLine("Error generating Excel file: " + ex.Message);
+            }
+        }
+    }
+}
+# 改进用户体验
