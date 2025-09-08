@@ -1,0 +1,95 @@
+// 代码生成时间: 2025-09-09 01:36:02
+@using Microsoft.AspNetCore.Components.Forms
+@inject ThemeService ThemeService
+@inject NavigationManager NavigationManager
+
+@code {
+    private Theme CurrentTheme = Theme.Light;
+
+    private enum Theme
+    {
+        Light,
+        Dark
+    }
+
+    protected override void OnInitialized()
+    {
+        CurrentTheme = ThemeService.GetCurrentTheme();
+    }
+
+    private void ToggleTheme()
+    {
+        try
+        {
+            ThemeService.SwitchTheme(CurrentTheme);
+            CurrentTheme = CurrentTheme == Theme.Light ? Theme.Dark : Theme.Light;
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that might occur during theme switching.
+            Console.WriteLine("Error switching theme: " + ex.Message);
+        }
+    }
+}
+
+<!-- ThemeToggle.razor -->
+<div>
+    <button @onclick="ToggleTheme" class="@(GetCurrentThemeClass())">Switch Theme</button>
+</div>
+
+@code {
+    private string GetCurrentThemeClass()
+    {
+        return CurrentTheme == Theme.Dark ? "dark-theme" : "light-theme";
+    }
+}
+
+/*
+ * ThemeService.cs - A service for managing application themes.
+ *
+ * This service provides methods for switching and retrieving the current theme.
+ */
+
+public class ThemeService
+{
+    private Theme _currentTheme;
+
+    public ThemeService()
+    {
+        _currentTheme = GetDefaultTheme();
+    }
+
+    public Theme GetCurrentTheme()
+    {
+        return _currentTheme;
+    }
+
+    public void SwitchTheme(Theme theme)
+    {
+        if (theme == _currentTheme)
+        {
+            // If the requested theme is the same as the current theme, do nothing.
+            return;
+        }
+
+        _currentTheme = theme;
+        PersistThemeSetting(_currentTheme);
+    }
+
+    private Theme GetDefaultTheme()
+    {
+        // Assume a default theme from application settings or user preferences.
+        return Theme.Light;
+    }
+
+    private void PersistThemeSetting(Theme theme)
+    {
+        // Save the theme setting to local storage, database, or another persistent store.
+        // For simplicity, this example does not implement actual persistence logic.
+    }
+}
+
+/*
+ * Note: To fully implement theme switching, you would need to add CSS classes for each theme,
+ * and possibly use CSS variables or a library like Bootstrap for responsive theme switching.
+ */
