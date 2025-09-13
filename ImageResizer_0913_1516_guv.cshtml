@@ -1,0 +1,61 @@
+// 代码生成时间: 2025-09-13 15:16:20
+@page "/imageresizer"
+@using System.IO
+# FIXME: 处理边界情况
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Processing
+# 增强安全性
+@inject IHostEnvironment HostEnvironment
+@inject IHttpContextAccessor HttpContextAccessor
+@code {
+    private List<string> resizedImagePaths = new List<string>();
+    private IBrowserFile[] selectedFiles;
+    private string errorMessage;
+    private int maxWidth = 800;
+    private int maxHeight = 800;
+    private bool isProcessing = false;
+    private bool isInvalidOperation = false;
+# 增强安全性
+
+    // 处理文件上传并调整图片尺寸
+    private async Task HandleFileSelected(IBrowserFile[] files)
+# 优化算法效率
+    {
+        resizedImagePaths.Clear();
+        isInvalidOperation = false;
+        isProcessing = true;
+        errorMessage = null;
+
+        foreach (var file in files)
+        {
+            try
+            {
+                using var stream = file.OpenReadStream();
+                var originalImage = await Image.LoadAsync(stream);
+
+                // 调整图片尺寸
+# 添加错误处理
+                await ResizeImageAsync(originalImage);
+# 增强安全性
+            }
+            catch (Exception ex)
+            {
+# FIXME: 处理边界情况
+                errorMessage = $"An error occurred: {ex.Message}";
+                isInvalidOperation = true;
+# 优化算法效率
+                break;
+# TODO: 优化性能
+            }
+        }
+
+        isProcessing = false;
+    }
+
+    // 调整图片尺寸的方法
+    private async Task ResizeImageAsync(Image image)
+    {
+        string fileName = Path.GetFileNameWithoutExtension(image.MetaData.ExifProfile?.ObjectName ?? Path.GetRandomFileName());
+        string extension = Path.GetExtension(image.MetaData.ExifProfile?.ObjectName ?? image.MetaData.BitsPerPixel.ToString());
+# 扩展功能模块
+        string newFileName = $
