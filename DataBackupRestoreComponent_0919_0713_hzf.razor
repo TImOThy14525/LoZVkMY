@@ -1,0 +1,90 @@
+// 代码生成时间: 2025-09-19 07:13:13
+// DataBackupRestoreComponent.razor.cs
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+
+namespace MyApp.Components
+{
+    public partial class DataBackupRestoreComponent
+    {
+        [Parameter]
+        public string DataDirectory { get; set; } = "./data";
+
+        [Parameter]
+        public EventCallback OnBackupCompleted { get; set; }
+
+        [Parameter]
+        public EventCallback OnRestoreCompleted { get; set; }
+
+        private bool IsBackupInProgress { get; set; } = false;
+        private bool IsRestoreInProgress { get; set; } = false;
+
+        // 备份数据的方法
+        private async Task BackupData()
+        {
+            IsBackupInProgress = true;
+            try
+            {
+                var backupPath = Path.Combine(DataDirectory, "backup.zip");
+                // 模拟备份数据的逻辑
+                await Task.Run(() => File.WriteAllBytes(backupPath, new byte[1024]));
+
+                // 触发备份完成事件
+                await OnBackupCompleted.InvokeAsync(null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Backup failed: {ex.Message}");
+            }
+            finally
+            {
+                IsBackupInProgress = false;
+            }
+        }
+
+        // 恢复数据的方法
+        private async Task RestoreData()
+        {
+            IsRestoreInProgress = true;
+            try
+            {
+                var backupPath = Path.Combine(DataDirectory, "backup.zip");
+                // 模拟恢复数据的逻辑
+                var data = await Task.Run(() => File.ReadAllBytes(backupPath));
+                // 这里可以根据实际需求将数据写入实际的文件或数据库
+
+                // 触发恢复完成事件
+                await OnRestoreCompleted.InvokeAsync(null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Restore failed: {ex.Message}");
+            }
+            finally
+            {
+                IsRestoreInProgress = false;
+            }
+        }
+    }
+}
+
+// DataBackupRestoreComponent.razor
+@code {
+    private readonly DataBackupRestoreComponent _component = new DataBackupRestoreComponent();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _component.OnBackupCompleted = () => StateHasChanged();
+            _component.OnRestoreCompleted = () => StateHasChanged();
+        }
+    }
+}
+
+<div class="data-backup-restore-component">
+    <button @onclick="_component.BackupData" disabled=@_component.IsBackupInProgress>Backup Data</button>
+    <button @onclick="_component.RestoreData" disabled=@_component.IsRestoreInProgress>Restore Data</button>
+</div>
